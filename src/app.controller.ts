@@ -5,9 +5,12 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
-  @Get('question')
-  async getQuestion() {
-    return await this.appService.getQuestion();
+
+  @Get('question/:area')
+  async getQuestion(
+    @Param('area') area: string
+  ) {
+    return await this.appService.getQuestion(area);
   }
 
   @Get('restart')
@@ -16,8 +19,16 @@ export class AppController {
     return { message: 'restart completed' }
   }
 
-  @Get('question/next/:id')
-  async getNextQuestion(@Param('id') id: string) {
-    return await this.appService.getNextQuestion(id);
+
+  @Get('areas')
+  async getAreas() {
+    return await this.appService.getAreas();
+  }
+
+
+
+  @Get('question/next/:id/:area')
+  async getNextQuestion(@Param('id') id: string, @Param('area') area: string) {
+    return await this.appService.getNextQuestion(id, area);
   }
 }

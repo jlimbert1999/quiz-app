@@ -8,7 +8,7 @@ export class Quiz {
     name: string;
 
     @Prop({ type: String })
-    group: string;
+    area: string;
 
     @Prop({ type: Boolean })
     isActive: boolean;
