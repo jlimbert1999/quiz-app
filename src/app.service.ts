@@ -7,6 +7,9 @@ import { Model } from 'mongoose';
 export class AppService {
   constructor(@InjectModel(Quiz.name) private quizModel: Model<Quiz>) { }
 
+  async getAreas() {
+    return await this.quizModel.distinct('area');
+  }
   async getQuestion(area: string) {
     const question = await this.quizModel.aggregate([
       { $match: { isActive: true, area: area } },
@@ -15,14 +18,10 @@ export class AppService {
     if (!question[0]) throw new BadRequestException('question no found')
     return question[0]
   }
-  async getAreas() {
-    return await this.quizModel.distinct('area');
+  async solveQuestion(id_question: string) {
+    await this.quizModel.findByIdAndUpdate(id_question, { isActive: false })
+  }
 
-  }
-  async getNextQuestion(currentQuestionId: string, area: string) {
-    await this.quizModel.findByIdAndUpdate(currentQuestionId, { isActive: false })
-    return await this.getQuestion(area)
-  }
   async restartQuestions() {
     await this.quizModel.updateMany({}, { isActive: true })
   }

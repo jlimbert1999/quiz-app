@@ -13,6 +13,9 @@ export class Quiz {
     @Prop({ type: Boolean })
     isActive: boolean;
 
+    @Prop({ type: String })
+    imageUrl: string
+
     @Prop({ type: [{ name: String, correct: Boolean }] })
     opciones: { name: string; correct: boolean }[];
 }

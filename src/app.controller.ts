@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Put } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller()
@@ -25,10 +25,8 @@ export class AppController {
     return await this.appService.getAreas();
   }
 
-
-
-  @Get('question/next/:id/:area')
-  async getNextQuestion(@Param('id') id: string, @Param('area') area: string) {
-    return await this.appService.getNextQuestion(id, area);
+  @Put('question/solve/:id')
+  async getNextQuestion(@Param('id') id: string) {
+    return await this.appService.solveQuestion(id);
   }
 }
