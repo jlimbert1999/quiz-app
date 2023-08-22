@@ -6,7 +6,7 @@ import { Quiz, QuizSchema } from './schemas/quiz.schema';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/quiz-app'),
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/quizz-app'),
     MongooseModule.forFeature([{ name: Quiz.name, schema: QuizSchema }])
   ],
   controllers: [AppController],
