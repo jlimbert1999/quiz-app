@@ -5,25 +5,25 @@ import { Model } from 'mongoose';
 
 @Injectable()
 export class AppService {
-  constructor(@InjectModel(Quiz.name) private quizModel: Model<Quiz>) { }
+  constructor() { }
 
   async getAreas() {
-    return await this.quizModel.distinct('area');
+    // return await this.quizModel.distinct('area');
   }
   async getQuestion(area: string) {
-    const question = await this.quizModel.aggregate([
-      { $match: { isActive: true, area: area } },
-      { $sample: { size: 1 } },
-    ]);
-    if (!question[0]) throw new BadRequestException('question no found')
-    return question[0]
+    // const question = await this.quizModel.aggregate([
+    //   { $match: { isActive: true, area: area } },
+    //   { $sample: { size: 1 } },
+    // ]);
+    // if (!question[0]) throw new BadRequestException('question no found')
+    // return question[0]
   }
   async solveQuestion(id_question: string) {
-    await this.quizModel.findByIdAndUpdate(id_question, { isActive: false })
+    // await this.quizModel.findByIdAndUpdate(id_question, { isActive: false })
   }
 
   async restartQuestions() {
-    await this.quizModel.updateMany({}, { isActive: true })
+    // await this.quizModel.updateMany({}, { isActive: true })
   }
 
   getHello(): string {
