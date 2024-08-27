@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { GameModule } from './modules/game/game.module';
 import { FilesModule } from './modules/files/files.module';
 import { TransmisionModule } from './modules/transmision/transmision.module';
@@ -14,7 +12,7 @@ import { TransmisionModule } from './modules/transmision/transmision.module';
     FilesModule,
     TransmisionModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

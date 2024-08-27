@@ -35,8 +35,4 @@ export class GameController {
     return this.gameService.getPendings();
   }
 
-  @Get('current/:id')
-  getCurrent(@Param('id') id: string) {
-    return this.gameService.getCurrent(id);
-  }
 }

@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Game, Question } from '../schemas';
-import { MatchProps } from '../dtos';
+import { Game, Question, QuestionDocument } from '../schemas';
+import { GetNextQuestionDto } from '../dtos';
 
 @Injectable()
 export class MatchService {
@@ -11,17 +11,26 @@ export class MatchService {
     @InjectModel(Question.name) private questionModel: Model<Question>,
   ) {}
 
-  async getRandomQuestion({ gameId, group }: MatchProps) {
-    const [question] = await this.questionModel.aggregate([
+  async checkCurrentMatch(id: string) {
+    const match = await this.gameModel.findById(id).populate('currentQuestion');
+    if (!match) throw new BadRequestException(`La partida ${id} no existe`);
+    return match;
+  }
+
+  async getRandomQuestion({ gameId, group }: GetNextQuestionDto) {
+    const [question] = await this.questionModel.aggregate<QuestionDocument>([
       { $match: { isActive: true, group: group } },
       { $sample: { size: 1 } },
     ]);
     if (!question) {
       throw new BadRequestException(`Sin preguntas para el area ${group}`);
     }
-    // await this.gameModel.updateOne(gameId, {
-    //   currentQuestion: question._id,
-    // });
+    const updatedGame = await this.gameModel.findByIdAndUpdate(gameId, { currentQuestion: question._id });
+    if (!updatedGame) throw new BadRequestException(`La partida ${gameId} no existe`);
     return question;
+  }
+
+  async answerQuestion(questionId: string) {
+    await this.questionModel.findByIdAndUpdate(questionId, { isActive: false });
   }
 }

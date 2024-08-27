@@ -1,12 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Controller, Param, Patch, Body, Get, Post, Query } from '@nestjs/common';
+
 import { PaginationParamsDto } from 'src/modules/common';
 import { QuestionService } from '../services/question.service';
 import { CreateQuestionDto, UpdateQuestionDto } from '../dtos';
@@ -32,10 +25,5 @@ export class QuestionController {
   @Get('groups')
   getGroups() {
     return this.questionService.getGroups();
-  }
-
-  @Get('play/:group')
-  getRandomQuestion(@Param('group') group: string) {
-    return this.questionService.getRandomQuestion(group);
   }
 }

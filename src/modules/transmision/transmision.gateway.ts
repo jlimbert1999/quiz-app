@@ -1,34 +1,38 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  OnGatewayConnection,
+  WebSocketServer,
+  SubscribeMessage,
+  MessageBody,
+} from '@nestjs/websockets';
 import { TransmisionService } from './transmision.service';
-import { CreateTransmisionDto } from './dto/create-transmision.dto';
-import { UpdateTransmisionDto } from './dto/update-transmision.dto';
+import { Server, Socket } from 'socket.io';
+import { Question } from '../game/schemas';
 
-@WebSocketGateway()
-export class TransmisionGateway {
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
+export class TransmisionGateway implements OnGatewayConnection {
+  @WebSocketServer() server: Server;
   constructor(private readonly transmisionService: TransmisionService) {}
 
-  @SubscribeMessage('createTransmision')
-  create(@MessageBody() createTransmisionDto: CreateTransmisionDto) {
-    return this.transmisionService.create(createTransmisionDto);
+  handleConnection(client: Socket) {
+    const chanel = client.handshake.auth['chanel'];
+    if (!chanel) client.disconnect();
+    client.join(chanel);
   }
 
-  @SubscribeMessage('findAllTransmision')
-  findAll() {
-    return this.transmisionService.findAll();
+  announceQuestion(question: Question, gameId: string) {
+    this.server.to(gameId).emit('next-question', question);
   }
 
-  @SubscribeMessage('findOneTransmision')
-  findOne(@MessageBody() id: number) {
-    return this.transmisionService.findOne(id);
+  @SubscribeMessage('show-options')
+  announceShowOptions(@MessageBody() gameId: string) {
+    this.server.to(gameId).emit('display-options');
   }
-
-  @SubscribeMessage('updateTransmision')
-  update(@MessageBody() updateTransmisionDto: UpdateTransmisionDto) {
-    return this.transmisionService.update(updateTransmisionDto.id, updateTransmisionDto);
-  }
-
-  @SubscribeMessage('removeTransmision')
-  remove(@MessageBody() id: number) {
-    return this.transmisionService.remove(id);
+  announceOptions(gameId: string) {
+    this.server.to(gameId).emit('show-options');
   }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -29,11 +29,5 @@ export class GameService {
 
   async getPendings() {
     return this.gameModel.find({ status: GameStatus.PENDING });
-  }
-
-  async getCurrent(id: string) {
-    const match = await this.gameModel.findById(id).populate('currentQuestion');
-    if (!match) throw new BadRequestException(`La partida ${id} no existe`);
-    return match;
   }
 }

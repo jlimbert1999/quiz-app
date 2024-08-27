@@ -1,33 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Question } from '../schemas';
 import { Model } from 'mongoose';
-import {
-  CreateQuestionDto,
-  QuestionOptionDto,
-  UpdateQuestionDto,
-} from '../dtos';
+
+import { Question } from '../schemas';
+import { CreateQuestionDto, QuestionOptionDto, UpdateQuestionDto } from '../dtos';
 import { PaginationParamsDto } from 'src/modules/common';
 
 @Injectable()
 export class QuestionService {
-  constructor(
-    @InjectModel(Question.name) private questionModel: Model<Question>,
-  ) {}
+  constructor(@InjectModel(Question.name) private questionModel: Model<Question>) {}
 
   async getGroups() {
     return await this.questionModel.distinct('group');
-  }
-
-  async getRandomQuestion(group: string) {
-    const question = await this.questionModel.aggregate([
-      { $match: { isActive: true, group: group } },
-      { $sample: { size: 1 } },
-    ]);
-    if (!question[0]) {
-      throw new BadRequestException(`Sin preguntas para el area ${group}`);
-    }
-    return question[0];
   }
 
   async disableQuestion(id: string) {
