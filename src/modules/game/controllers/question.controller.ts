@@ -7,6 +7,12 @@ import { CreateQuestionDto, UpdateQuestionDto } from '../dtos';
 @Controller('questions')
 export class QuestionController {
   constructor(private questionService: QuestionService) {}
+
+  @Post('upload')
+  upload(@Body() data: any[]) {
+    return this.questionService.upload(data);
+  }
+
   @Get()
   findAll(@Query() params: PaginationParamsDto) {
     return this.questionService.findAll(params);

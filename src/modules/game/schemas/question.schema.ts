@@ -19,7 +19,7 @@ const QuestionOptionSchema = SchemaFactory.createForClass(QuestionOption);
 
 export type QuestionDocument = HydratedDocument<Question>;
 @Schema()
-export class Question {
+export class Question extends Document {
   @Prop({ type: String, required: true })
   text: string;
 

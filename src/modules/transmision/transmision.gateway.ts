@@ -28,6 +28,10 @@ export class TransmisionGateway implements OnGatewayConnection {
     this.server.to(gameId).emit('next-question', question);
   }
 
+  announceAnswer(gameId: string, selectedIndex: number) {
+    this.server.to(gameId).emit('answer-question', selectedIndex);
+  }
+
   @SubscribeMessage('show-options')
   announceShowOptions(@MessageBody() gameId: string) {
     this.server.to(gameId).emit('display-options');

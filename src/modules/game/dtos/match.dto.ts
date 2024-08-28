@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class GetNextQuestionDto {
   @IsMongoId()
@@ -7,4 +7,12 @@ export class GetNextQuestionDto {
   @IsString()
   @IsNotEmpty()
   group: string;
+}
+
+export class AnswerQuestionDto {
+  @IsMongoId()
+  gameId: string;
+
+  @IsInt()
+  selectedIndex: number;
 }

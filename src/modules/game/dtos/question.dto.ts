@@ -46,7 +46,7 @@ export class CreateQuestionDto {
 
   @IsOptional()
   @IsBoolean()
-  isActive: boolean;
+  isActive?: boolean;
 }
 
 export class UpdateQuestionDto extends PartialType(CreateQuestionDto) {}

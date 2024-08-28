@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Game, Question, QuestionDocument } from '../schemas';
-import { GetNextQuestionDto } from '../dtos';
+import { AnswerQuestionDto, GetNextQuestionDto } from '../dtos';
 
 @Injectable()
 export class MatchService {
@@ -30,7 +30,12 @@ export class MatchService {
     return question;
   }
 
-  async answerQuestion(questionId: string) {
-    await this.questionModel.findByIdAndUpdate(questionId, { isActive: false });
+  async answerQuestion({ gameId }: AnswerQuestionDto) {
+    const match = await this.gameModel.findById(gameId);
+    const { currentQuestion } = match;
+    if (!currentQuestion) {
+      throw new BadRequestException('La partida no tiene una pregunta actual');
+    }
+    await this.questionModel.updateMany({ _id: currentQuestion._id }, { isActive: false });
   }
 }

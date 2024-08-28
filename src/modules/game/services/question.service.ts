@@ -6,6 +6,11 @@ import { Question } from '../schemas';
 import { CreateQuestionDto, QuestionOptionDto, UpdateQuestionDto } from '../dtos';
 import { PaginationParamsDto } from 'src/modules/common';
 
+interface data {
+  text: string;
+  group: string;
+  options: { text: string; isCorrect: boolean }[];
+}
 @Injectable()
 export class QuestionService {
   constructor(@InjectModel(Question.name) private questionModel: Model<Question>) {}
@@ -50,5 +55,14 @@ export class QuestionService {
     if (answers.length > 1 || answers.length === 0) {
       throw new BadRequestException('Las opciones deben tener 1 respuesta');
     }
+  }
+
+  
+  async upload(data: data[]) {
+    for (const element of data) {
+      const createdQuestion = new this.questionModel(element);
+      await createdQuestion.save();
+    }
+    return { message: 'UPLOAD DONE!!' };
   }
 }
