@@ -5,7 +5,6 @@ import { Document, HydratedDocument } from 'mongoose';
 class QuestionOption extends Document {
   @Prop({
     type: String,
-    required: true,
   })
   text: string;
 

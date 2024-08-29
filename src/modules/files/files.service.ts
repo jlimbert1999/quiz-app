@@ -39,6 +39,6 @@ export class FilesService {
 
   buildFileUrl(filename: string): string {
     // const host = this.configService.getOrThrow('host');
-    return `http://localhost/files/question/${filename}`;
+    return `http://localhost:3000/files/question/${filename}`;
   }
 }

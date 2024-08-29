@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Param,
-  Post,
-  Get,
-  Res,
-  UploadedFiles,
-  UseInterceptors,
-  UploadedFile,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Param, Post, Get, Res, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Response } from 'express';
@@ -42,10 +32,7 @@ export class FilesController {
   }
 
   @Get('question/:imageName')
-  findQuestionImage(
-    @Res() res: Response,
-    @Param('imageName') imageName: string,
-  ) {
+  findQuestionImage(@Res() res: Response, @Param('imageName') imageName: string) {
     const path = this.fileService.getStaticQuestionImage(imageName);
     res.sendFile(path);
   }

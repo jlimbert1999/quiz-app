@@ -11,7 +11,6 @@ import {
 } from 'class-validator';
 
 export class QuestionOptionDto {
-  @IsNotEmpty()
   @IsString()
   text: string;
 
