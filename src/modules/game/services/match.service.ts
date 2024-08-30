@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Game, Question, QuestionDocument } from '../schemas';
-import { AnswerQuestionDto, GetNextQuestionDto } from '../dtos';
+import { Game, MatchStatus, Question, QuestionDocument } from '../schemas';
+import { AnswerQuestionDto, CreateMatchDto, GetNextQuestionDto } from '../dtos';
 import { FilesService } from 'src/modules/files/files.service';
 
 @Injectable()
@@ -12,6 +12,17 @@ export class MatchService {
     @InjectModel(Question.name) private questionModel: Model<Question>,
     private fileService: FilesService,
   ) {}
+
+  async create(matchDto: CreateMatchDto) {
+    const { player1name, player2name } = matchDto;
+    console.log(matchDto);
+    const createMatch = new this.gameModel({ player1: { name: player1name }, player2: { name: player2name } });
+    return await createMatch.save();
+  }
+
+  async getPendings() {
+    return this.gameModel.find({ status: MatchStatus.PENDING });
+  }
 
   async addScore1(matchId: string, score: number) {
     const match = await this.gameModel.findById(matchId);

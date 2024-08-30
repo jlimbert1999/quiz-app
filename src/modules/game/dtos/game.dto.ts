@@ -1,47 +1,19 @@
-import { Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 
-import {
-  IsDefined,
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsObject,
-  IsOptional,
-  IsString,
-  Min,
-  ValidateNested,
-} from 'class-validator';
-import { GameStatus } from '../schemas';
-
-export class PlayerDto {
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { MatchStatus } from '../schemas';
+export class CreateMatchDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  player1name: string;
 
-  @IsInt()
-  @Min(0)
-  score: number;
-}
-export class CreateGameDto {
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => PlayerDto)
-  player1: PlayerDto;
-
-  @IsDefined()
-  @IsNotEmptyObject()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => PlayerDto)
-  player2: PlayerDto;
+  @IsString()
+  @IsNotEmpty()
+  player2name: string;
 }
 
-export class UpdateGameDto extends PartialType(CreateGameDto) {
+export class UpdateGameDto extends PartialType(CreateMatchDto) {
   @IsOptional()
-  @IsEnum(GameStatus)
-  status: GameStatus;
+  @IsEnum(MatchStatus)
+  status: MatchStatus;
 }

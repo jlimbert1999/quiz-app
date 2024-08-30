@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Game, GameStatus } from '../schemas';
-import { CreateGameDto, UpdateGameDto } from '../dtos';
+import { Game, MatchStatus } from '../schemas';
+import { UpdateGameDto } from '../dtos';
 import { PaginationParamsDto } from 'src/modules/common';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class GameService {
     return { matches, length };
   }
 
-  async create(gameDto: CreateGameDto) {
+  async create(gameDto: any) {
     const createdDependency = new this.gameModel(gameDto);
     return await createdDependency.save();
   }
@@ -28,6 +28,6 @@ export class GameService {
   }
 
   async getPendings() {
-    return this.gameModel.find({ status: GameStatus.PENDING });
+    // return this.gameModel.find({ status: GameStatus.PENDING });
   }
 }

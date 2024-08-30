@@ -1,14 +1,6 @@
-import {
-  Controller,
-  Param,
-  Patch,
-  Query,
-  Body,
-  Post,
-  Get,
-} from '@nestjs/common';
+import { Controller, Param, Patch, Query, Body, Post, Get } from '@nestjs/common';
 import { PaginationParamsDto } from 'src/modules/common';
-import { CreateGameDto, UpdateGameDto } from '../dtos';
+import { UpdateGameDto } from '../dtos';
 import { GameService } from '../services';
 
 @Controller('game')
@@ -21,7 +13,7 @@ export class GameController {
   }
 
   @Post()
-  create(@Body() game: CreateGameDto) {
+  create(@Body() game: any) {
     return this.gameService.create(game);
   }
 
@@ -34,5 +26,4 @@ export class GameController {
   getPendings() {
     return this.gameService.getPendings();
   }
-
 }

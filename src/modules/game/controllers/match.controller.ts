@@ -1,11 +1,21 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { MatchService } from '../services';
 import { TransmisionGateway } from 'src/modules/transmision/transmision.gateway';
-import { AnswerQuestionDto, GetNextQuestionDto } from '../dtos';
+import { AnswerQuestionDto, CreateMatchDto, GetNextQuestionDto } from '../dtos';
 
 @Controller('match')
 export class MatchController {
   constructor(private matchService: MatchService, private transmisionGateway: TransmisionGateway) {}
+
+  @Post()
+  match(@Body() data: CreateMatchDto) {
+    return this.matchService.create(data);
+  }
+
+  @Get()
+  findAll() {
+    return this.matchService.getPendings();
+  }
 
   @Post('score1/:id')
   async score1(@Param('id') id: string, @Body() data: { score: number }) {
