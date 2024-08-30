@@ -7,6 +7,20 @@ import { AnswerQuestionDto, GetNextQuestionDto } from '../dtos';
 export class MatchController {
   constructor(private matchService: MatchService, private transmisionGateway: TransmisionGateway) {}
 
+  @Post('score1/:id')
+  async score1(@Param('id') id: string, @Body() data: { score: number }) {
+    const result = await this.matchService.addScore1(id, data.score);
+    this.transmisionGateway.score1(id, result.score);
+    return result;
+  }
+
+  @Post('score2/:id')
+  async score2(@Param('id') id: string, @Body() data: { score: number }) {
+    const result = await this.matchService.addScore2(id, data.score);
+    this.transmisionGateway.score2(id, result.score);
+    return result;
+  }
+
   @Get('check/:id')
   getCurrent(@Param('id') id: string) {
     return this.matchService.checkCurrentMatch(id);

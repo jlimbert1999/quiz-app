@@ -32,11 +32,24 @@ export class TransmisionGateway implements OnGatewayConnection {
     this.server.to(gameId).emit('answer-question', selectedIndex);
   }
 
+  score1(gameId: string, value: number) {
+    this.server.to(gameId).emit('score1', value);
+  }
+
+  score2(gameId: string, value: number) {
+    this.server.to(gameId).emit('score2', value);
+  }
+
   @SubscribeMessage('show-options')
   announceShowOptions(@MessageBody() gameId: string) {
     this.server.to(gameId).emit('display-options');
   }
   announceOptions(gameId: string) {
     this.server.to(gameId).emit('show-options');
+  }
+
+  @SubscribeMessage('winner')
+  winnder(@MessageBody() gameId: string) {
+    this.server.to(gameId).emit('show-winner');
   }
 }

@@ -13,6 +13,21 @@ export class MatchService {
     private fileService: FilesService,
   ) {}
 
+  async addScore1(matchId: string, score: number) {
+    const match = await this.gameModel.findById(matchId);
+    if (!match) throw new BadRequestException(`La partida ${matchId} no existe`);
+    match.player1.score += score;
+    await this.gameModel.updateOne({ _id: matchId }, match);
+    return { score: match.player1.score };
+  }
+  async addScore2(matchId: string, score: number) {
+    const match = await this.gameModel.findById(matchId);
+    if (!match) throw new BadRequestException(`La partida ${matchId} no existe`);
+    match.player2.score += score;
+    await this.gameModel.updateOne({ _id: matchId }, match);
+    return { score: match.player2.score };
+  }
+
   async checkCurrentMatch(id: string) {
     const match = await this.gameModel.findById(id).populate('currentQuestion');
     if (!match) throw new BadRequestException(`La partida ${id} no existe`);
