@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 
 import { CreateQuestionDto, QuestionOptionDto, UpdateQuestionDto } from '../dtos';
 import { FilesService } from 'src/modules/files/files.service';
@@ -68,15 +68,19 @@ export class QuestionService {
     }
   }
 
-  private _plainQuestion(question: Question) {
-    const { options, imageUrl, ...props} = question.toObject();
-    return {
-      ...props,
-      ...(imageUrl && { imageUrl: this.fileService.buildFileUrl(imageUrl) }),
-      options: options.map(({ imageUrl, ...props }) => ({
-        ...props,
-        ...(imageUrl && { imageUrl: this.fileService.buildFileUrl(imageUrl) }),
-      })),
-    };
+  private _plainQuestion(question: Question): Question {
+    if (question instanceof Document) {
+      question = question.toObject();
+    }
+    if (question.imageUrl) {
+      question.imageUrl = this.fileService.buildFileUrl(question.imageUrl);
+    }
+    question.options = question.options.map((option) => {
+      if (option.imageUrl) {
+        option.imageUrl = this.fileService.buildFileUrl(option.imageUrl);
+      }
+      return option;
+    });
+    return question;
   }
 }

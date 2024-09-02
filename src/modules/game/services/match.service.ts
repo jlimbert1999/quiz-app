@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { Game, MatchStatus, Question, QuestionDocument } from '../schemas';
 import { AnswerQuestionDto, CreateMatchDto, GetNextQuestionDto } from '../dtos';
 import { FilesService } from 'src/modules/files/files.service';
@@ -15,7 +15,6 @@ export class MatchService {
 
   async create(matchDto: CreateMatchDto) {
     const { player1name, player2name } = matchDto;
-    console.log(matchDto);
     const createMatch = new this.gameModel({ player1: { name: player1name }, player2: { name: player2name } });
     return await createMatch.save();
   }
@@ -31,6 +30,7 @@ export class MatchService {
     await this.gameModel.updateOne({ _id: matchId }, match);
     return { score: match.player1.score };
   }
+
   async addScore2(matchId: string, score: number) {
     const match = await this.gameModel.findById(matchId);
     if (!match) throw new BadRequestException(`La partida ${matchId} no existe`);
@@ -42,6 +42,9 @@ export class MatchService {
   async checkCurrentMatch(id: string) {
     const match = await this.gameModel.findById(id).populate('currentQuestion');
     if (!match) throw new BadRequestException(`La partida ${id} no existe`);
+    if (match.currentQuestion) {
+      match.currentQuestion = this._plainQuestion(match.currentQuestion);
+    }
     return match;
   }
 
@@ -55,12 +58,7 @@ export class MatchService {
     }
     const updatedGame = await this.gameModel.findByIdAndUpdate(gameId, { currentQuestion: question._id });
     if (!updatedGame) throw new BadRequestException(`La partida ${gameId} no existe`);
-    question.imageUrl = this.fileService.buildFileUrl(question.imageUrl ?? null);
-    question.options = question.options.map((el) => {
-      el.imageUrl = this.fileService.buildFileUrl(question.imageUrl ?? null);
-      return el;
-    });
-    return question;
+    return this._plainQuestion(question);
   }
 
   async answerQuestion({ gameId }: AnswerQuestionDto) {
@@ -72,15 +70,19 @@ export class MatchService {
     await this.questionModel.updateMany({ _id: currentQuestion._id }, { isActive: false });
   }
 
-  private _plainQuestion(question: Question) {
-    const { options, imageUrl, ...props } = question.toObject();
-    return {
-      ...props,
-      ...(imageUrl && { imageUrl: this.fileService.buildFileUrl(imageUrl) }),
-      options: options.map(({ imageUrl, ...props }) => ({
-        ...props,
-        ...(imageUrl && { imageUrl: this.fileService.buildFileUrl(imageUrl) }),
-      })),
-    };
+  private _plainQuestion(question: Question): Question {
+    if (question instanceof Document) {
+      question = question.toObject();
+    }
+    if (question.imageUrl) {
+      question.imageUrl = this.fileService.buildFileUrl(question.imageUrl);
+    }
+    question.options = question.options.map((option) => {
+      if (option.imageUrl) {
+        option.imageUrl = this.fileService.buildFileUrl(option.imageUrl);
+      }
+      return option;
+    });
+    return question;
   }
 }
