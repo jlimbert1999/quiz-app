@@ -67,7 +67,7 @@ export class MatchService {
     if (!currentQuestion) {
       throw new BadRequestException('La partida no tiene una pregunta actual');
     }
-    await this.questionModel.updateMany({ _id: currentQuestion._id }, { isActive: false });
+    await this.questionModel.updateOne({ _id: currentQuestion._id }, { isActive: false });
   }
 
   private _plainQuestion(question: Question): Question {
