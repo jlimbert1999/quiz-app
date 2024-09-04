@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { MatchService } from '../services';
 import { TransmisionGateway } from 'src/modules/transmision/transmision.gateway';
-import { AnswerQuestionDto, CreateMatchDto, GetNextQuestionDto } from '../dtos';
+import { AnswerQuestionDto, CreateMatchDto, GetNextQuestionDto, UpdateMatchDto, UpdateScoreDto } from '../dtos';
 
 @Controller('match')
 export class MatchController {
@@ -17,17 +17,15 @@ export class MatchController {
     return this.matchService.getPendings();
   }
 
-  @Post('score1/:id')
-  async score1(@Param('id') id: string, @Body() data: { score: number }) {
-    const result = await this.matchService.addScore1(id, data.score);
-    this.transmisionGateway.score1(id, result.score);
-    return result;
+  @Patch(':id')
+  updateMatch(@Param('id') id: string, @Body() body: UpdateMatchDto) {
+    return this.matchService.updateMatch(id, body);
   }
 
-  @Post('score2/:id')
-  async score2(@Param('id') id: string, @Body() data: { score: number }) {
-    const result = await this.matchService.addScore2(id, data.score);
-    this.transmisionGateway.score2(id, result.score);
+  @Post('score/:gameId')
+  async score1(@Param('gameId') id: string, @Body() Body: UpdateScoreDto) {
+    const result = await this.matchService.updateScore(id, Body);
+    // this.transmisionGateway.score1(id, result.score);
     return result;
   }
 

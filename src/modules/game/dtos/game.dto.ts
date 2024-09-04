@@ -1,6 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { MatchStatus } from '../schemas';
 export class CreateMatchDto {
   @IsString()
@@ -12,8 +10,16 @@ export class CreateMatchDto {
   player2name: string;
 }
 
-export class UpdateGameDto extends PartialType(CreateMatchDto) {
+export class UpdateMatchDto {
   @IsOptional()
   @IsEnum(MatchStatus)
   status: MatchStatus;
+
+  @IsInt()
+  @Min(1)
+  incrementBy: number;
+
+  @IsInt()
+  @Min(1)
+  timer: number;
 }

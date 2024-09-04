@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Game, MatchStatus } from '../schemas';
-import { UpdateGameDto } from '../dtos';
+import { Game } from '../schemas';
+import { UpdateMatchDto } from '../dtos';
 import { PaginationParamsDto } from 'src/modules/common';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class GameService {
     return await createdDependency.save();
   }
 
-  async update(id: string, gameDto: UpdateGameDto) {
+  async update(id: string, gameDto: UpdateMatchDto) {
     return await this.gameModel.findByIdAndUpdate(id, gameDto, { new: true });
   }
 

@@ -1,6 +1,6 @@
 import { Controller, Param, Patch, Query, Body, Post, Get } from '@nestjs/common';
 import { PaginationParamsDto } from 'src/modules/common';
-import { UpdateGameDto } from '../dtos';
+import { UpdateMatchDto } from '../dtos';
 import { GameService } from '../services';
 
 @Controller('game')
@@ -18,7 +18,7 @@ export class GameController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() game: UpdateGameDto) {
+  update(@Param('id') id: string, @Body() game: UpdateMatchDto) {
     return this.gameService.update(id, game);
   }
 

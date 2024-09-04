@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Document, Model } from 'mongoose';
 import { Game, MatchStatus, Question, QuestionDocument } from '../schemas';
-import { AnswerQuestionDto, CreateMatchDto, GetNextQuestionDto } from '../dtos';
+import { AnswerQuestionDto, CreateMatchDto, GetNextQuestionDto, UpdateMatchDto, UpdateScoreDto } from '../dtos';
 import { FilesService } from 'src/modules/files/files.service';
 
 @Injectable()
@@ -23,20 +23,21 @@ export class MatchService {
     return this.gameModel.find({ status: MatchStatus.PENDING });
   }
 
-  async addScore1(matchId: string, score: number) {
+  async updateScore(matchId: string, body: UpdateScoreDto) {
+    const { player, operation } = body;
     const match = await this.gameModel.findById(matchId);
     if (!match) throw new BadRequestException(`La partida ${matchId} no existe`);
-    match.player1.score += score;
+    const value = operation === 'add' ? match.incrementBy : -match.incrementBy;
+    let newScore = 0;
+    if (player === 'player1') {
+      match.player1.score += value;
+      newScore = match.player1.score;
+    } else {
+      match.player2.score += value;
+      newScore = match.player2.score;
+    }
     await this.gameModel.updateOne({ _id: matchId }, match);
-    return { score: match.player1.score };
-  }
-
-  async addScore2(matchId: string, score: number) {
-    const match = await this.gameModel.findById(matchId);
-    if (!match) throw new BadRequestException(`La partida ${matchId} no existe`);
-    match.player2.score += score;
-    await this.gameModel.updateOne({ _id: matchId }, match);
-    return { score: match.player2.score };
+    return { score: newScore };
   }
 
   async checkCurrentMatch(id: string) {
@@ -68,6 +69,10 @@ export class MatchService {
       throw new BadRequestException('La partida no tiene una pregunta actual');
     }
     await this.questionModel.updateOne({ _id: currentQuestion._id }, { isActive: false });
+  }
+
+  async updateMatch(id: string, matchDto: UpdateMatchDto) {
+    return await this.gameModel.findByIdAndUpdate(id, matchDto, { new: true });
   }
 
   private _plainQuestion(question: Question): Question {

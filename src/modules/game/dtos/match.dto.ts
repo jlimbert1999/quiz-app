@@ -1,4 +1,4 @@
-import { IsInt, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsInt, IsMongoId, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class GetNextQuestionDto {
   @IsMongoId()
@@ -15,4 +15,12 @@ export class AnswerQuestionDto {
 
   @IsInt()
   selectedIndex: number;
+}
+
+export class UpdateScoreDto {
+  @IsIn(['player1', 'player2'])
+  player: 'player1' | 'player2';
+
+  @IsIn(['add', 'remove'])
+  operation: 'add' | 'remove';
 }

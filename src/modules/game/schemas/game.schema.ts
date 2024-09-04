@@ -33,6 +33,18 @@ export class Game {
   })
   player2: Player;
 
+  @Prop({
+    type: Number,
+    default: 10,
+  })
+  incrementBy: number;
+
+  @Prop({
+    type: Number,
+    default: 60,
+  })
+  timer: number;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Question.name })
   currentQuestion: Question;
 
