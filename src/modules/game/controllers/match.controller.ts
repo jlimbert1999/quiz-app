@@ -17,15 +17,15 @@ export class MatchController {
     return this.matchService.getPendings();
   }
 
-  @Patch(':id')
-  updateMatch(@Param('id') id: string, @Body() body: UpdateMatchDto) {
-    return this.matchService.updateMatch(id, body);
+  @Patch('settings/:id')
+  updateSettings(@Param('id') id: string, @Body() body: UpdateMatchDto) {
+    return this.matchService.updateSettings(id, body);
   }
 
   @Post('score/:gameId')
-  async score1(@Param('gameId') id: string, @Body() Body: UpdateScoreDto) {
-    const result = await this.matchService.updateScore(id, Body);
-    // this.transmisionGateway.score1(id, result.score);
+  async updateScore(@Param('gameId') id: string, @Body() body: UpdateScoreDto) {
+    const result = await this.matchService.updateScore(id, body);
+    this.transmisionGateway.announceScore(id, result.score, body.player);
     return result;
   }
 

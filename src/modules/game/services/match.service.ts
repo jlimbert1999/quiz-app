@@ -23,23 +23,6 @@ export class MatchService {
     return this.gameModel.find({ status: MatchStatus.PENDING });
   }
 
-  async updateScore(matchId: string, body: UpdateScoreDto) {
-    const { player, operation } = body;
-    const match = await this.gameModel.findById(matchId);
-    if (!match) throw new BadRequestException(`La partida ${matchId} no existe`);
-    const value = operation === 'add' ? match.incrementBy : -match.incrementBy;
-    let newScore = 0;
-    if (player === 'player1') {
-      match.player1.score += value;
-      newScore = match.player1.score;
-    } else {
-      match.player2.score += value;
-      newScore = match.player2.score;
-    }
-    await this.gameModel.updateOne({ _id: matchId }, match);
-    return { score: newScore };
-  }
-
   async checkCurrentMatch(id: string) {
     const match = await this.gameModel.findById(id).populate('currentQuestion');
     if (!match) throw new BadRequestException(`La partida ${id} no existe`);
@@ -71,7 +54,24 @@ export class MatchService {
     await this.questionModel.updateOne({ _id: currentQuestion._id }, { isActive: false });
   }
 
-  async updateMatch(id: string, matchDto: UpdateMatchDto) {
+  async updateScore(matchId: string, body: UpdateScoreDto) {
+    const { player, operation } = body;
+    const match = await this.gameModel.findById(matchId);
+    if (!match) throw new BadRequestException(`La partida ${matchId} no existe`);
+    const value = operation === 'add' ? match.incrementBy : -match.incrementBy;
+    let newScore = 0;
+    if (player === 'player1') {
+      match.player1.score += value;
+      newScore = match.player1.score;
+    } else {
+      match.player2.score += value;
+      newScore = match.player2.score;
+    }
+    await this.gameModel.updateOne({ _id: matchId }, match);
+    return { score: newScore };
+  }
+
+  async updateSettings(id: string, matchDto: UpdateMatchDto) {
     return await this.gameModel.findByIdAndUpdate(id, matchDto, { new: true });
   }
 
