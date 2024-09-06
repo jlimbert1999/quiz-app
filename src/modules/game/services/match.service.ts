@@ -20,7 +20,12 @@ export class MatchService {
   }
 
   async getPendings() {
-    return this.gameModel.find({ status: MatchStatus.PENDING });
+    return this.gameModel.find({ status: { $ne: MatchStatus.COMPLETED } });
+  }
+
+  async restartQuestions() {
+    await this.questionModel.updateMany({}, { $set: { isActive: true } });
+    return { message: 'Preguntas restablecidas' };
   }
 
   async checkCurrentMatch(id: string) {
@@ -40,9 +45,19 @@ export class MatchService {
     if (!question) {
       throw new BadRequestException(`Sin preguntas para el area ${group}`);
     }
-    const updatedGame = await this.gameModel.findByIdAndUpdate(gameId, { currentQuestion: question._id });
+    const updatedGame = await this.gameModel.findByIdAndUpdate(gameId, {
+      currentQuestion: question._id,
+      status: MatchStatus.PENDING,
+    });
     if (!updatedGame) throw new BadRequestException(`La partida ${gameId} no existe`);
     return this._plainQuestion(question);
+  }
+
+  async showQuestionOptions(gameId: string) {
+    const match = await this.gameModel.findById(gameId);
+    if (!match || !match.currentQuestion) throw new BadRequestException(`Partida ${gameId} invalida`);
+    await this.gameModel.updateOne({ _id: gameId }, { status: MatchStatus.SELECTED });
+    return MatchStatus.SELECTED;
   }
 
   async answerQuestion({ gameId }: AnswerQuestionDto) {

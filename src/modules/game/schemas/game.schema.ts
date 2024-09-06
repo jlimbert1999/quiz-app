@@ -5,6 +5,7 @@ import { Question } from './question.schema';
 export enum MatchStatus {
   PENDING = 'pending',
   COMPLETED = 'completed',
+  SELECTED = 'selected',
 }
 @Schema({ _id: false })
 class Player extends Document {
@@ -46,7 +47,7 @@ export class Game {
   timer: number;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Question.name })
-  currentQuestion: Question;
+  currentQuestion?: Question;
 
   @Prop({ enum: MatchStatus, default: MatchStatus.PENDING })
   status: MatchStatus;

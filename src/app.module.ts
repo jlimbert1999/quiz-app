@@ -7,7 +7,7 @@ import { TransmisionModule } from './modules/transmision/transmision.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017/quiz-app'),
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/test-quiz'),
     GameModule,
     FilesModule,
     TransmisionModule,

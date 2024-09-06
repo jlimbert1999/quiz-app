@@ -36,10 +36,6 @@ export class TransmisionGateway implements OnGatewayConnection {
     this.server.to(gameId).emit('score', { score, player });
   }
 
-  @SubscribeMessage('show-options')
-  announceShowOptions(@MessageBody() gameId: string) {
-    this.server.to(gameId).emit('display-options');
-  }
   announceOptions(gameId: string) {
     this.server.to(gameId).emit('show-options');
   }

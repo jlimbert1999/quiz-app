@@ -17,6 +17,11 @@ export class MatchController {
     return this.matchService.getPendings();
   }
 
+  @Get('restart')
+  restartQuestions() {
+    return this.matchService.restartQuestions();
+  }
+
   @Patch('settings/:id')
   updateSettings(@Param('id') id: string, @Body() body: UpdateMatchDto) {
     return this.matchService.updateSettings(id, body);
@@ -39,6 +44,13 @@ export class MatchController {
     const question = await this.matchService.getRandomQuestion(params);
     this.transmisionGateway.announceQuestion(question, params.gameId);
     return question;
+  }
+
+  @Get('show/:gameId')
+  async showQuestionOptions(@Param('gameId') gameId: string) {
+    const matchStatus = await this.matchService.showQuestionOptions(gameId);
+    this.transmisionGateway.announceOptions(gameId);
+    return { status: matchStatus };
   }
 
   @Post('answer')

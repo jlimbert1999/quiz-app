@@ -1,4 +1,4 @@
-import { IsIn, IsInt, IsMongoId, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsIn, IsInt, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class GetNextQuestionDto {
   @IsMongoId()
