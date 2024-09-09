@@ -13,28 +13,32 @@ export class MatchService {
     private fileService: FilesService,
   ) {}
 
+  async checkCurrentMatch() {
+    const match = await this.gameModel.findOne({ status: { $ne: MatchStatus.COMPLETED } }).populate('currentQuestion');
+    if (!match) throw new BadRequestException(`No hay ninguna partida en curso`);
+    if (match.currentQuestion) {
+      match.currentQuestion = this._plainQuestion(match.currentQuestion);
+    }
+    return match;
+  }
+
+  async getMatchResult(id: string) {
+    const match = await this.gameModel.findById(id);
+    if (!match) throw new BadRequestException(`La partida ${id} no existe`);
+    return match;
+  }
+
   async create(matchDto: CreateMatchDto) {
+    const currentMatch = await this.gameModel.findOne({ status: { $ne: MatchStatus.COMPLETED } });
+    if (currentMatch) throw new BadRequestException('Ya existe una partida en curso');
     const { player1name, player2name } = matchDto;
     const createMatch = new this.gameModel({ player1: { name: player1name }, player2: { name: player2name } });
     return await createMatch.save();
   }
 
-  async getPendings() {
-    return this.gameModel.find({ status: { $ne: MatchStatus.COMPLETED } });
-  }
-
   async restartQuestions() {
     await this.questionModel.updateMany({}, { $set: { isActive: true } });
     return { message: 'Preguntas restablecidas' };
-  }
-
-  async checkCurrentMatch(id: string) {
-    const match = await this.gameModel.findById(id).populate('currentQuestion');
-    if (!match) throw new BadRequestException(`La partida ${id} no existe`);
-    if (match.currentQuestion) {
-      match.currentQuestion = this._plainQuestion(match.currentQuestion);
-    }
-    return match;
   }
 
   async getRandomQuestion({ gameId, group }: GetNextQuestionDto) {
@@ -76,18 +80,35 @@ export class MatchService {
     const value = operation === 'add' ? match.incrementBy : -match.incrementBy;
     let newScore = 0;
     if (player === 'player1') {
-      match.player1.score += value;
+      const total = match.player1.score + value;
+      if (total >= 0) {
+        match.player1.score = total;
+      }
       newScore = match.player1.score;
     } else {
-      match.player2.score += value;
+      const total = match.player2.score + value;
+      if (total >= 0) {
+        match.player2.score = total;
+      }
       newScore = match.player2.score;
     }
     await this.gameModel.updateOne({ _id: matchId }, match);
     return { score: newScore };
   }
 
-  async updateSettings(id: string, matchDto: UpdateMatchDto) {
-    return await this.gameModel.findByIdAndUpdate(id, matchDto, { new: true });
+  async endMatch(id: string) {
+    const match = await this.gameModel.findById(id);
+    if (!match) throw new BadRequestException(`La partida ${id} no existe`);
+    const { player1, player2 } = match;
+    if (player1.score === player2.score) throw new BadRequestException('Los puntajes son iguales');
+    await this.gameModel.updateOne({ _id: id }, { status: MatchStatus.COMPLETED });
+    return { message: 'Match is ended' };
+  }
+
+  async updateMatchSettings(id: string, matchDto: UpdateMatchDto) {
+    const match = await this.gameModel.findByIdAndUpdate(id, matchDto, { new: true });
+    if (!match) throw new BadRequestException(`La partida ${id} no existe`);
+    return match;
   }
 
   private _plainQuestion(question: Question): Question {

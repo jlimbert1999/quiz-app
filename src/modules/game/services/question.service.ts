@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Document, Model } from 'mongoose';
+import { Document, FilterQuery, Model } from 'mongoose';
 
-import { CreateQuestionDto, QuestionOptionDto, UpdateQuestionDto } from '../dtos';
+import { CreateQuestionDto, FilterQuestionsDto, QuestionOptionDto, UpdateQuestionDto } from '../dtos';
 import { FilesService } from 'src/modules/files/files.service';
 import { PaginationParamsDto } from 'src/modules/common';
 import { Question } from '../schemas';
@@ -24,10 +24,14 @@ export class QuestionService {
     await this.questionModel.updateOne({ _id: id }, { isActive: false });
   }
 
-  async findAll({ limit, offset }: PaginationParamsDto) {
+  async findAll({ limit, offset, term, group }: FilterQuestionsDto) {
+    const filter: FilterQuery<Question> = {
+      ...(term && { text: new RegExp(term) }),
+      ...(group && { group: group }),
+    };
     const [questions, length] = await Promise.all([
-      this.questionModel.find({}).limit(limit).skip(offset).sort({ _id: -1 }),
-      this.questionModel.count(),
+      this.questionModel.find(filter).limit(limit).skip(offset).sort({ _id: -1 }),
+      this.questionModel.count(filter),
     ]);
     return { questions: questions.map((question) => this._plainQuestion(question)), length };
   }

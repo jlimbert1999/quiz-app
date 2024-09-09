@@ -1,8 +1,7 @@
 import { Controller, Param, Patch, Body, Get, Post, Query } from '@nestjs/common';
 
-import { PaginationParamsDto } from 'src/modules/common';
 import { QuestionService } from '../services/question.service';
-import { CreateQuestionDto, UpdateQuestionDto } from '../dtos';
+import { CreateQuestionDto, FilterQuestionsDto, UpdateQuestionDto } from '../dtos';
 
 @Controller('questions')
 export class QuestionController {
@@ -14,7 +13,7 @@ export class QuestionController {
   }
 
   @Get()
-  findAll(@Query() params: PaginationParamsDto) {
+  findAll(@Query() params: FilterQuestionsDto) {
     return this.questionService.findAll(params);
   }
 

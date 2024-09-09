@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Game, GameSchema, Question, QuestionSchema } from './schemas';
-import { GameService, MatchService, QuestionService } from './services';
-import { GameController, MatchController, QuestionController } from './controllers';
+import { MatchService, QuestionService } from './services';
+import { MatchController, QuestionController } from './controllers';
 import { TransmisionModule } from '../transmision/transmision.module';
 import { FilesModule } from '../files/files.module';
 
@@ -15,7 +15,7 @@ import { FilesModule } from '../files/files.module';
     TransmisionModule,
     FilesModule,
   ],
-  controllers: [GameController, QuestionController, MatchController],
-  providers: [GameService, QuestionService, MatchService],
+  controllers: [QuestionController, MatchController],
+  providers: [QuestionService, MatchService],
 })
 export class GameModule {}

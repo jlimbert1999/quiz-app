@@ -1,12 +1,5 @@
-import {
-  WebSocketGateway,
-  OnGatewayConnection,
-  WebSocketServer,
-  SubscribeMessage,
-  MessageBody,
-} from '@nestjs/websockets';
-import { TransmisionService } from './transmision.service';
-import { Server, Socket } from 'socket.io';
+import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 import { Question } from '../game/schemas';
 
 @WebSocketGateway({
@@ -14,34 +7,34 @@ import { Question } from '../game/schemas';
     origin: '*',
   },
 })
-export class TransmisionGateway implements OnGatewayConnection {
+export class TransmisionGateway {
   @WebSocketServer() server: Server;
-  constructor(private readonly transmisionService: TransmisionService) {}
 
-  handleConnection(client: Socket) {
-    const chanel = client.handshake.auth['chanel'];
-    if (!chanel) client.disconnect();
-    client.join(chanel);
+  announceQuestion(question: Question) {
+    this.server.emit('next-question', question);
   }
 
-  announceQuestion(question: Question, gameId: string) {
-    this.server.to(gameId).emit('next-question', question);
+  announceOptions() {
+    this.server.emit('show-options');
   }
 
-  announceAnswer(gameId: string, selectedIndex: number) {
-    this.server.to(gameId).emit('answer-question', selectedIndex);
+  announceAnswer(selectedIndex: number) {
+    this.server.emit('answer-question', selectedIndex);
   }
 
-  announceScore(gameId: string, score: number, player: 'player1' | 'player2') {
-    this.server.to(gameId).emit('score', { score, player });
+  announceScore(score: number, player: 'player1' | 'player2') {
+    this.server.emit('score', { score, player });
   }
 
-  announceOptions(gameId: string) {
-    this.server.to(gameId).emit('show-options');
+  announceWinner() {
+    this.server.emit('show-winner');
   }
 
-  @SubscribeMessage('winner')
-  winnder(@MessageBody() gameId: string) {
-    this.server.to(gameId).emit('show-winner');
+  announceNewMatch() {
+    this.server.emit('new-match');
+  }
+
+  announceSettings(incrementBy: number, timer: number) {
+    this.server.emit('match-settings', { incrementBy, timer });
   }
 }
